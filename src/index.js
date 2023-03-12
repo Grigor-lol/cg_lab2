@@ -1,22 +1,3 @@
-function initWebGL(canvas) {
-    gl = null;
-    try { // Попытаться получить стандартный контекст.
-// Если не получится, попробовать получить экспериментальный.
-        gl = canvas.getContext("webgl2") || canvas.getContext("webgl") || canvas.getContext("experimentalwebgl");
-    } catch (e) {
-        console.log(e.toString())
-    }
-// Если мы не получили контекст GL, завершить работу
-    if (!gl) {
-        alert("Unable to initialize WebGL. Your browser may not support it.");
-        gl = null;
-    }
-    //canvas.width = window.innerWidth
-    //canvas.height = window.innerHeight
-    return gl;
-}
-
-
 const vsSource =
     'attribute vec3 vertPosition;\n' +
     'attribute vec3 vertColor;\n' +
@@ -52,6 +33,21 @@ const fsSourceLines = 'precision mediump float;\n' +
     '}\n' +
     '}'
 
+function initWebGL(canvas) {
+    gl = null;
+    try {
+        gl = canvas.getContext("webgl2") || canvas.getContext("webgl") || canvas.getContext("experimentalwebgl");
+    } catch (e) {
+        console.log(e.toString())
+    }
+
+    if (!gl) {
+        alert("Unable to initialize WebGL. Your browser may not support it.");
+        gl = null;
+    }
+    return gl;
+}
+
 function loadShader(gl, type, source) {
     const shader = gl.createShader(type);
 // Send the source to the shader object
@@ -67,9 +63,7 @@ function loadShader(gl, type, source) {
     return shader;
 }
 
-
 function initShaderProgram(gl, vsSource, fsSource) {
-
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
     const shaderProgram = gl.createProgram();
@@ -136,17 +130,14 @@ let matWorldUniformLocation = gl.getUniformLocation(shaderProgram, 'mWorld');
 
 let worldMatrix = new Float32Array(16);
 glMatrix.mat4.identity(worldMatrix);
-
-
 gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 7);
 
 
 // CUBE
-
-let canvas2 = document.getElementById("cubeCanvas");
-initWebGL(canvas2)
+let canvasCube = document.getElementById("cubeCanvas");
+initWebGL(canvasCube)
 if (gl)
 { // продолжать только если WebGL доступен и работает
     // Устанавливаем размер вьюпорта
@@ -226,7 +217,6 @@ function initBuffersCube()
 }
 
 const shaderProgramCube = initShaderProgram(gl, vsSource, fsSource);
-
 initBuffersCube()
 vertexPositionAttribute = gl.getAttribLocation(shaderProgramCube, "vertPosition");
 vertColorAttribute = gl.getAttribLocation(shaderProgramCube, "vertColor");
@@ -243,9 +233,10 @@ gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
 let xRotationMatrix = new Float32Array(16);
 let yRotationMatrix = new Float32Array(16);
-
 var identityMatrix = new Float32Array(16);
+
 glMatrix.mat4.identity(identityMatrix);
+
 var angle = 0.25 * Math.PI;
 glMatrix.mat4.rotate(yRotationMatrix, identityMatrix, angle * 3, [0, 1, 0]);
 glMatrix.mat4.rotate(xRotationMatrix, identityMatrix, angle * 3, [1, 0, 0]);
@@ -261,13 +252,10 @@ gl.drawArrays(gl.TRIANGLES, 0, 36);
 
 
 //SQUARE
-
-let canvas3 = document.getElementById("squareCanvas");
-initWebGL(canvas3); // инициализация контекста GL – сами пишем
+let canvasSquare = document.getElementById("squareCanvas");
+initWebGL(canvasSquare); // инициализация контекста GL – сами пишем
 
 const shaderProgramLineSquare = initShaderProgram(gl, vsSource, fsSourceLines);
-// продолжать только если WebGL доступен и работает
-
 if (gl)
 { // продолжать только если WebGL доступен и работает
     // Устанавливаем размер вьюпорта
@@ -285,13 +273,12 @@ function initBuffersSquare()
 {
     let squareVerticesBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
-
     let vertices =
         [
-            -0.5, -0.5, 0.0,     0.2, 0.3, 0.5,
-            -0.5, 0.5, 0.0,     0.2, 0.3, 0.5,
-            0.5, -0.5, 0.0,     0.2, 0.3, 0.5,
-            0.5, 0.5, 0.0,     0.2, 0.3, 0.5,
+            -0.5, -0.5, 0.0,  0.0, 0.0, 0.0,
+            -0.5, 0.5, 0.0,   0.0, 0.0, 0.0,
+            0.5, -0.5, 0.0,   0.0, 0.0, 0.0,
+            0.5, 0.5, 0.0,    0.0, 0.0, 0.0,
         ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
